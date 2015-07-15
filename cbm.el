@@ -41,9 +41,15 @@
 (defvar cbm-buffers nil
   "Holds current cycling-list.")
 
+(defun cbm-rotate ()
+  "Rotates `cbm-buffers' until `current-buffer' is the first element."
+  (while (not (eq (car cbm-buffers) (current-buffer)))
+    (let ((elem (car cbm-buffers))
+          (rest (cdr cbm-buffers)))
+      (setq cbm-buffers (append rest `(,elem))))))
+
 (defun cbm-make-buffer-list ()
-  "Initialize `cbm-buffers' with all buffers with the same `major-mode'.
-First and for most initializes `cbm-mode-buffers-alist buffer."
+  "Initialize `cbm-buffers' with all buffers with the same `major-mode'."
   (let* ((mode (with-current-buffer (current-buffer)
                  major-mode)))
     (dolist (buffer (buffer-list))
@@ -53,7 +59,8 @@ First and for most initializes `cbm-mode-buffers-alist buffer."
              mode)
         (push buffer cbm-buffers))))
   (setq cbm-buffers (sort cbm-buffers #'(lambda (buffer1 buffer2)
-                               (string< (buffer-name buffer1) (buffer-name buffer2))))))
+                                          (string< (buffer-name buffer1) (buffer-name buffer2)))))
+  (cbm-rotate))
 
 ;;;###autoload
 (defun cbm-cycle ()
