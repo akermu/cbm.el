@@ -1,11 +1,12 @@
-;;; cbm.el --- Cycle through buffers with the same `major-mode'.
+;;; cbm.el --- Switch to "similiar" buffers.
 
 ;; Copyright 2015 Lukas Fürmetz
 
 ;; Author: Lukas Fürmetz <fuermetz@mailbox.org>
 ;; URL: http://github.com/akermu/cbm.el
-;; Version: 0.1
-;; Keywords: buffers, cycling
+;; Package-Requires: ((cl-lib "0.5"))
+;; Version: 0.2
+;; Keywords: buffers
 
 ;; cmb.el is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -25,18 +26,24 @@
 ;; Installation:
 
 ;; Put cbm.el in your `load-path' and require it:
+;;
 ;; (require 'cbm)
 
-;; It is recommended to bind `cbm-cycle' to a key:
-;; (global-set-key (kbd "C-'") #'cbm-cycle)
+;; It is recommended to bind `cbm-cycle', `cbm-switch-buffer' and
+;; `cbm-find-org-agenda-file' to a key:
+;;
+;; (global-set-key (kbd "C-;") #'cbm-cycle)
+;; (global-set-key (kbd "C-'") #'cbm-switch-buffer)
+;; (global-set-key (kbd "C-c o") #'cbm-find-org-agenda-file)
 
 ;; Usage:
 
-;; This package provides one usefull command `cbm-cycle', which cycles
-;; through all buffers with the same `major-mode' as the
-;; current-buffer.
+;; This package provides one usefull commands for switching to
+;; "similiar" buffers.
 
 ;;; Code:
+(require 'cl-lib)
+
 
 (defvar cbm-buffers nil
   "Holds current cycling-list.")
@@ -58,8 +65,10 @@
                major-mode)
              mode)
         (push buffer cbm-buffers))))
-  (setq cbm-buffers (sort cbm-buffers #'(lambda (buffer1 buffer2)
-                                          (string< (buffer-name buffer1) (buffer-name buffer2)))))
+  (setq cbm-buffers (sort cbm-buffers
+                          #'(lambda (buffer1 buffer2)
+                              (string< (buffer-name buffer1)
+                                       (buffer-name buffer2)))))
   (cbm-rotate))
 
 ;;;###autoload
@@ -75,6 +84,39 @@
   (let ((buffer (car cbm-buffers)))
     (when (bufferp buffer)
       (switch-to-buffer buffer))))
+
+;;;###autoload
+(defun cbm-switch-buffer ()
+  "Switch to buffer, filtered by `major-mode'."
+  (interactive)
+  (let* ((mm (with-current-buffer (current-buffer)
+               major-mode))
+         (buffer-list
+          (mapcar #'buffer-name
+                  (remove (current-buffer)
+                          (cl-remove-if-not
+                           (lambda (buf)
+                             (eq mm (with-current-buffer buf
+                                      major-mode)))
+                           (buffer-list))))))
+    (switch-to-buffer
+     (completing-read "Switch to buffer: " buffer-list nil t))))
+
+;;;###autoload
+(defun cbm-find-org-agenda-file ()
+  "Switch to a file in function `org-agenda-files'."
+  (interactive)
+  (unless (and (fboundp #'org-agenda-files)
+               (> (length (org-agenda-files)) 1))
+    (error "Cannot find another org-agend-file"))
+  (let* ((file-alist (mapcar #'(lambda (elem)
+                                `(,(file-name-nondirectory elem) . ,elem))
+                             (remove (buffer-file-name)
+                                     (org-agenda-files)))))
+    (find-file (cdr (assoc
+                     (completing-read "Switch to org-file: " file-alist nil t)
+                     file-alist)))))
+
 
 (provide 'cbm)
 ;;; cbm.el ends here
