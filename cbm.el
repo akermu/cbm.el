@@ -5,7 +5,7 @@
 ;; Author: Lukas Fürmetz <fuermetz@mailbox.org>
 ;; URL: http://github.com/akermu/cbm.el
 ;; Package-Requires: ((cl-lib "0.5"))
-;; Version: 0.2
+;; Version: 0.3
 ;; Keywords: buffers
 
 ;; cmb.el is free software: you can redistribute it and/or modify
@@ -35,6 +35,7 @@
 ;; (global-set-key (kbd "C-;") #'cbm-cycle)
 ;; (global-set-key (kbd "C-'") #'cbm-switch-buffer)
 ;; (global-set-key (kbd "C-c o") #'cbm-find-org-agenda-file)
+;; (define-key rcirc-mode-map (kbd "M-i") #'cbm-rcirc-switch-to-channel)
 
 ;; Usage:
 
@@ -111,12 +112,32 @@
                (> (length (org-agenda-files)) 1))
     (error "Cannot find another org-agend-file"))
   (let* ((file-alist (mapcar #'(lambda (elem)
-                                `(,(file-name-nondirectory elem) . ,elem))
+                                 `(,(file-name-nondirectory elem) . ,elem))
                              (remove (buffer-file-name)
                                      (org-agenda-files)))))
     (find-file (cdr (assoc
                      (completing-read "Switch to org-file: " file-alist nil t)
                      file-alist)))))
+
+;;;###autoload
+(defun cbm-rcirc-switch-to-channel ()
+  "Switch to a rcirc channel."
+  (interactive)
+  (let* ((channel-alist
+          (mapcar (lambda (buf)
+                    `(,(replace-regexp-in-string "@.*" "" (buffer-name buf)) . ,buf))
+                  (cl-remove-if-not (lambda (buf)
+                                      (with-current-buffer buf
+                                        (eq major-mode #'rcirc-mode)))
+                                    (buffer-list))))
+         (channel
+          (completing-read "Switch to channel: "
+                           channel-alist
+                           nil
+                           t
+                           "#")))
+    (when channel
+      (switch-to-buffer (cdr (assoc channel channel-alist))))))
 
 
 (provide 'cbm)
