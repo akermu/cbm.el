@@ -110,7 +110,7 @@
   (interactive)
   (unless (and (fboundp #'org-agenda-files)
                (> (length (org-agenda-files)) 1))
-    (error "Cannot find another org-agend-file"))
+    (error "Cannot find another org-agenda-file"))
   (let* ((file-alist (mapcar #'(lambda (elem)
                                  `(,(file-name-nondirectory elem) . ,elem))
                              (remove (buffer-file-name)
