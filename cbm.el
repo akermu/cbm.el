@@ -46,6 +46,7 @@
 (require 'cl-lib)
 
 (declare-function org-agenda-files "org")
+(declare-function rcirc-mode "rcirc")
 
 (defvar cbm-buffers nil
   "Holds current cycling-list.")
