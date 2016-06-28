@@ -110,7 +110,7 @@
   "Switch to a file in function `org-agenda-files'."
   (interactive)
   (unless (and (fboundp #'org-agenda-files)
-               (> (length (org-agenda-files)) 1))
+               (> (length (org-agenda-files t)) 1))
     (error "Cannot find another org-agenda-file"))
   (let* ((file-alist (mapcar #'(lambda (elem)
                                  `(,(file-name-nondirectory elem) . ,elem))
