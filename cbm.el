@@ -107,18 +107,22 @@
 
 ;;;###autoload
 (defun cbm-find-org-agenda-file ()
-  "Switch to a file in function `org-agenda-files'."
+  "Switch to a file from `org-agenda-files'."
   (interactive)
-  (unless (and (fboundp #'org-agenda-files)
-               (> (length (org-agenda-files t)) 1))
-    (error "Cannot find another org-agenda-file"))
-  (let* ((file-alist (mapcar #'(lambda (elem)
+  (unless (fboundp #'org-agenda-files)
+    (error "Please install `org-mode'"))
+  (let* ((files (remove (buffer-file-name) (org-agenda-files t)))
+         (file-alist (mapcar #'(lambda (elem)
                                  `(,(file-name-nondirectory elem) . ,elem))
-                             (remove (buffer-file-name)
-                                     (org-agenda-files)))))
-    (find-file (cdr (assoc
-                     (completing-read "Switch to org-file: " file-alist nil t)
-                     file-alist)))))
+                             files)))
+    (when (eq (length file-alist) 0)
+      (error "Cannot find another file in `org-agenda-files'"))
+    (if (eq (length file-alist) 1)
+        (find-file (cdar file-alist))
+      (let* ((name (completing-read "Switch to org-file: " file-alist nil t))
+             (elem (assoc name file-alist))
+             (path (cdr elem)))
+      (find-file path)))))
 
 ;;;###autoload
 (defun cbm-rcirc-switch-to-channel ()
