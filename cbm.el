@@ -104,7 +104,8 @@
                                       major-mode)))
                            (buffer-list))))))
     (switch-to-buffer
-     (completing-read "Switch to buffer: " buffer-list nil t))))
+     (completing-read (format "Switch to %s buffer: " mm)
+                      buffer-list nil t))))
 
 ;;;###autoload
 (defun cbm-find-org-agenda-file ()
