@@ -1,4 +1,4 @@
-* cbm - Switch to "similiar" buffers.
+* cbm - Switch to similar buffers.
 
 ** Installation:
 
@@ -6,7 +6,7 @@
 
    (require 'cbm)
 
-   The package is also availaible via `melpa' or `melpa-stable.
+   The package is also available via `melpa' or `melpa-stable.
 
    It is recommended to bind `cbm-cycle', `cbm-switch-buffer' and
    `cbm-find-org-agenda-file', `cbm-rcirc-switch-to-channel' to a key:
@@ -18,6 +18,6 @@
 
 ** Usage:
 
-   This package provides one usefull commands for switching to
-   "similiar" buffers.
-
+   This package provides useful commands for switching to similar
+   buffers. It's particularly handy for switching between buffers in
+   the same major mode.

@@ -1,4 +1,4 @@
-;;; cbm.el --- Switch to "similiar" buffers.
+;;; cbm.el --- Switch to similar buffers.
 
 ;; Copyright 2015 Lukas Fürmetz
 
@@ -8,7 +8,7 @@
 ;; Version: 0.3
 ;; Keywords: buffers
 
-;; cmb.el is free software: you can redistribute it and/or modify
+;; cbm.el is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
@@ -39,8 +39,9 @@
 
 ;; Usage:
 
-;; This package provides one usefull commands for switching to
-;; "similiar" buffers.
+;; This package provides useful commands for switching to similar
+;; buffers. It's particularly handy for switching between buffers in
+;; the same major mode.
 
 ;;; Code:
 (require 'cl-lib)
