@@ -111,6 +111,7 @@
 (defun cbm-find-org-agenda-file ()
   "Switch to a file from `org-agenda-files'."
   (interactive)
+  (require 'org nil :noerror)
   (unless (fboundp #'org-agenda-files)
     (error "Please install `org-mode'"))
   (let* ((files (remove (buffer-file-name) (org-agenda-files t)))
